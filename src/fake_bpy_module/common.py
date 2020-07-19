@@ -64,6 +64,8 @@ def has_data_type(str_: str, data_type: str) -> bool:
     start_index = 0
     end_index = len(str_)
 
+    data_type = data_type.replace(".", "\.")
+
     for m in re.finditer(data_type, str_):
         si = m.start(0)
         ei = m.end(0)
@@ -1333,8 +1335,7 @@ class DataTypeRefiner:
             #   data_type_2: mathutils.Vector
             #       => noise.cell
             elif rest_level_1 >= 1 and rest_level_2 == 0:
-                final_data_type = ".".join(mod_names_1[match_level:])
-                final_data_type += "." + self.get_base_name(data_type_1)
+                final_data_type = self.get_base_name(data_type_1)
             else:
                 raise RuntimeError("Should not reach this condition. ({} vs {})"
                                    .format(rest_level_1, rest_level_2))
