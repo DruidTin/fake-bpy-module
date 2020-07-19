@@ -966,9 +966,6 @@ class SectionInfo:
     def __init__(self):
         self.info_list: List['Info'] = []
 
-    def same(self, other):
-        return self.to_dict() == other.to_dict()
-
     def add_info(self, info: 'Info'):
         self.info_list.append(info)
 
@@ -1019,20 +1016,6 @@ class DataTypeRefiner:
     def __init__(self, package_structure: 'ModuleStructure', entry_points: List['EntryPoint']):
         self._package_structure: 'ModuleStructure' = package_structure
         self._entry_points: List['EntryPoint'] = entry_points
-
-    def is_builtin_data_type(self, data_type: str) -> bool:
-        return data_type in BUILTIN_DATA_TYPE
-
-    def is_modifier_data_type(self, data_type: str) -> bool:
-        return data_type in MODIFIER_DATA_TYPE
-
-    def make_annotate_data_type(self, data_type: str) -> str:
-        if self.is_builtin_data_type(data_type):
-            return data_type
-        if self.is_modifier_data_type(data_type):
-            return data_type
-
-        return "'{}'".format(data_type)
 
     def get_refined_data_type(self, data_type: 'DataType', module_name: str) -> 'DataType':
         if data_type.type() == 'UNKNOWN':

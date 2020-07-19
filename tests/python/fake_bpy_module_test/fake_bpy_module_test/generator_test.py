@@ -694,8 +694,7 @@ class PackageAnalyzerTest(common.FakeBpyModuleTestBase):
         self.assertEqual(target_module_2.data[0].type(), "function")
         self.assertEqual(target_module_2.data[0].name(), "function_1")
         self.assertEqual(len(target_module_2.child_modules), 0)
-        # TODO: below test is failed due to bugs in PackageAnalyzer._get_import_module_path
-        # self.assertEqual(len(target_2.dependencies), 1)
+        self.assertEqual(len(target_2.dependencies), 1)
 
 
 class PackageGeneratorTest(common.FakeBpyModuleTestBase):
