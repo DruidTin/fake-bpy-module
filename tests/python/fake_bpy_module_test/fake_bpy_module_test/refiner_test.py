@@ -217,7 +217,7 @@ class DataTypeRefinerTest(common.FakeBpyModuleTestBase):
         self.assertEqual(refiner.get_generation_data_type("module_1.ClassC", "module_1.submodule_1.ClassA"),
                          "module_1.ClassC")
         self.assertEqual(refiner.get_generation_data_type("module_1.submodule_1.ClassA", "module_1.ClassC"),
-                         "submodule_1.ClassA")
+                         "ClassA")
 
     def test_get_refined_data_type(self):
         package = ModuleStructure()

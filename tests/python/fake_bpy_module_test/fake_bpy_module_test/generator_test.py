@@ -88,8 +88,11 @@ class CodeWriterTest(common.FakeBpyModuleTestBase):
             writer.format(style_config="pep8")
             writer.write(f)
 
-        actual_file_path = "{}/{}".format(self.data_dir, "code_writer_test_normal.py")
-        self.assertTrue(filecmp.cmp(self.output_file_path, actual_file_path))
+        expect_file_path = "{}/{}".format(self.data_dir, "code_writer_test_normal.py")
+        actual_file_path = self.output_file_path
+        with open(actual_file_path, "r") as f:
+            self.log(f.read())
+        self.assertTrue(filecmp.cmp(expect_file_path, actual_file_path))
 
     def test_with_code_indent(self):
         with open(self.output_file_path, "w", newline="\n") as f:
@@ -106,8 +109,11 @@ class CodeWriterTest(common.FakeBpyModuleTestBase):
             writer.format(style_config="pep8")
             writer.write(f)
 
-        actual_file_path = "{}/{}".format(self.data_dir, "code_writer_test_with_code_indent.py")
-        self.assertTrue(filecmp.cmp(self.output_file_path, actual_file_path))
+        expect_file_path = "{}/{}".format(self.data_dir, "code_writer_test_with_code_indent.py")
+        actual_file_path = self.output_file_path
+        with open(actual_file_path, "r") as f:
+            self.log(f.read())
+        self.assertTrue(filecmp.cmp(expect_file_path, actual_file_path))
 
     def test_with_reset(self):
         with open(self.output_file_path, "w", newline="\n") as f:
@@ -124,8 +130,11 @@ class CodeWriterTest(common.FakeBpyModuleTestBase):
             writer.format(style_config="pep8")
             writer.write(f)
 
-        actual_file_path = "{}/{}".format(self.data_dir, "code_writer_test_with_reset.py")
-        self.assertTrue(filecmp.cmp(self.output_file_path, actual_file_path))
+        expect_file_path = "{}/{}".format(self.data_dir, "code_writer_test_with_reset.py")
+        actual_file_path = self.output_file_path
+        with open(actual_file_path, "r") as f:
+            self.log(f.read())
+        self.assertTrue(filecmp.cmp(expect_file_path, actual_file_path))
 
 
 class BaseGeneratorTest(common.FakeBpyModuleTestBase):
@@ -270,8 +279,11 @@ class BaseGeneratorTest(common.FakeBpyModuleTestBase):
         generator = BaseGenerator()
         generator.generate(self.output_file_path, info, "pep8")
 
-        actual_file_path = "{}/{}".format(self.data_dir, "base_generator_test_generate.py")
-        self.assertTrue(filecmp.cmp(self.output_file_path, actual_file_path))
+        expect_file_path = "{}/{}".format(self.data_dir, "base_generator_test_generate.py")
+        actual_file_path = self.output_file_path
+        with open(actual_file_path, "r") as f:
+            self.log(f.read())
+        self.assertTrue(filecmp.cmp(expect_file_path, actual_file_path))
 
     def test_dump_json(self):
         info = GenerationInfoByTarget()
@@ -300,11 +312,12 @@ class BaseGeneratorTest(common.FakeBpyModuleTestBase):
         generator = BaseGenerator()
         generator.dump_json(self.output_file_path, info)
 
-        with open(self.output_file_path, "r") as f:
-            actual_data = { "data": json.load(f) }
-        actual_file_path = "{}/{}".format(self.data_dir, "base_generator_test_dump_json.json")
-        with open(actual_file_path, "r") as f:
+        expect_file_path = "{}/{}".format(self.data_dir, "base_generator_test_dump_json.json")
+        with open(expect_file_path, "r") as f:
             expect_data = { "data": json.load(f) }
+        actual_file_path = self.output_file_path
+        with open(actual_file_path, "r") as f:
+            actual_data = { "data": json.load(f) }
         self.assertDictEqual(expect_data, actual_data)
 
     def test_pre_process(self):
@@ -726,26 +739,33 @@ class PackageGeneratorTest(common.FakeBpyModuleTestBase):
         pkg_generator.add_rule(rule_1)
         pkg_generator.generate()
 
-        actual_files_dir = "{}/package_generator_test_single_rule".format(self.data_dir)
+        expect_files_dir = "{}/package_generator_test_single_rule".format(self.data_dir)
+        actual_files_dir = self.output_dir
 
         py_files = [
             "module_abc.py",
         ]
         for file_ in py_files:
-            expect_file_path = "{}/{}".format(self.output_dir, file_)
+            expect_file_path = "{}/{}".format(expect_files_dir, file_)
             actual_file_path = "{}/{}".format(actual_files_dir, file_)
+            with open(actual_file_path, "r") as f:
+                self.log("============= {} =============".format(actual_file_path))
+                self.log(f.read())
             self.assertTrue(filecmp.cmp(expect_file_path, actual_file_path))
 
         json_files = [
             "module_abc.py-dump.json",
         ]
         for file_ in json_files:
-            expect_file_path = "{}/{}".format(self.output_dir, file_)
+            expect_file_path = "{}/{}".format(expect_files_dir, file_)
             actual_file_path = "{}/{}".format(actual_files_dir, file_)
             with open(expect_file_path, "r") as f:
                 expect_json = { "data": json.load(f) }
             with open(actual_file_path, "r") as f:
-                actual_json = { "data": json.load(f) }
+                self.log("============= {} =============".format(actual_file_path))
+                data = json.load(f)
+                self.log(str(data))
+                actual_json = { "data": data }
             self.assertDictEqual(expect_json, actual_json)
 
     def test_multiple_rules(self):
@@ -781,7 +801,8 @@ class PackageGeneratorTest(common.FakeBpyModuleTestBase):
         pkg_generator.add_rule(rule_3)
         pkg_generator.generate()
 
-        actual_files_dir = "{}/package_generator_test_multiple_rules".format(self.data_dir)
+        expect_files_dir = "{}/package_generator_test_multiple_rules".format(self.data_dir)
+        actual_files_dir = self.output_dir
 
         py_files = [
             "module_1/__init__.py",
@@ -789,8 +810,11 @@ class PackageGeneratorTest(common.FakeBpyModuleTestBase):
             "module_2.py",
         ]
         for file_ in py_files:
-            expect_file_path = "{}/{}".format(self.output_dir, file_)
+            expect_file_path = "{}/{}".format(expect_files_dir, file_)
             actual_file_path = "{}/{}".format(actual_files_dir, file_)
+            with open(actual_file_path, "r") as f:
+                self.log("============= {} =============".format(actual_file_path))
+                self.log(f.read())
             self.assertTrue(filecmp.cmp(expect_file_path, actual_file_path))
 
         json_files = [
@@ -799,10 +823,13 @@ class PackageGeneratorTest(common.FakeBpyModuleTestBase):
             "module_2.py-dump.json",
         ]
         for file_ in json_files:
-            expect_file_path = "{}/{}".format(self.output_dir, file_)
+            expect_file_path = "{}/{}".format(expect_files_dir, file_)
             actual_file_path = "{}/{}".format(actual_files_dir, file_)
             with open(expect_file_path, "r") as f:
                 expect_json = { "data": json.load(f) }
             with open(actual_file_path, "r") as f:
-                actual_json = { "data": json.load(f) }
+                self.log("============= {} =============".format(actual_file_path))
+                data = json.load(f)
+                self.log(str(data))
+                actual_json = { "data": data }
             self.assertDictEqual(expect_json, actual_json)
