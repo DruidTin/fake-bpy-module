@@ -1265,13 +1265,13 @@ class DataTypeRefiner:
 
         return ensured
 
-    def get_generation_data_type(self, data_type_1: str,
+    def get_generation_data_type(self, data_type: str,
                                  target_module: str) -> str:
-        mod_names_full_1 = self.get_module_name(data_type_1)
+        mod_names_full_1 = self.get_module_name(data_type)
         mod_names_full_2 = target_module
 
         if mod_names_full_1 is None or mod_names_full_2 is None:
-            return data_type_1      # TODO: should return better data_type
+            return data_type      # TODO: should return better data_type
 
         mod_names_1 = mod_names_full_1.split(".")
         mod_names_2 = mod_names_full_2.split(".")
@@ -1286,40 +1286,40 @@ class DataTypeRefiner:
             else:
                 match_level = len(mod_names_1)
 
-        # [Case 1] No match => Use data_type_1
-        #   data_type_1: bpy.types.Mesh
-        #   data_type_2: bgl.glCallLists()
+        # [Case 1] No match => Use data_type
+        #   data_type: bpy.types.Mesh
+        #   target_module: bgl
         #       => bpy.types.Mesh
         if match_level == 0:
-            final_data_type = self._ensure_correct_data_type(data_type_1)
+            final_data_type = self._ensure_correct_data_type(data_type)
         else:
             rest_level_1 = len(mod_names_1) - match_level
             rest_level_2 = len(mod_names_2) - match_level
 
-            # [Case 2] Match exactly => Use data_type_1 without module
-            #   data_type_1: bgl.Buffer
-            #   data_type_2: bgl.glCallLists()
+            # [Case 2] Match exactly => Use data_type without module
+            #   data_type: bgl.Buffer
+            #   target_module: bgl
             #       => Buffer
             if rest_level_1 == 0 and rest_level_2 == 0:
-                final_data_type = self.get_base_name(data_type_1)
-            # [Case 3] Match partially (Same level) => Use data_type_1
-            #   data_type_1: bpy.types.Mesh
-            #   data_type_2: bpy.ops.automerge()
+                final_data_type = self.get_base_name(data_type)
+            # [Case 3] Match partially (Same level) => Use data_type
+            #   data_type: bpy.types.Mesh
+            #   target_module: bpy.ops
             #       => bpy.types.Mesh
             elif rest_level_1 >= 1 and rest_level_2 >= 1:
-                final_data_type = self._ensure_correct_data_type(data_type_1)
-            # [Case 4] Match partially (Upper level) => Use data_type_1
-            #   data_type_1: mathutils.Vector
-            #   data_type_2: mathutils.noise.cell
+                final_data_type = self._ensure_correct_data_type(data_type)
+            # [Case 4] Match partially (Upper level) => Use data_type
+            #   data_type: mathutils.Vector
+            #   target_module: mathutils.noise
             #       => mathutils.Vector
             elif rest_level_1 == 0 and rest_level_2 >= 1:
-                final_data_type = self._ensure_correct_data_type(data_type_1)
-            # [Case 5] Match partially (Lower level) => Use data_type_1
-            #   data_type_1: mathutils.noise.cell
-            #   data_type_2: mathutils.Vector
+                final_data_type = self._ensure_correct_data_type(data_type)
+            # [Case 5] Match partially (Lower level) => Use data_type
+            #   data_type: mathutils.noise.cell
+            #   target_module: mathutils
             #       => mathutils.noise.cell
             elif rest_level_1 >= 1 and rest_level_2 == 0:
-                final_data_type = self._ensure_correct_data_type(data_type_1)
+                final_data_type = self._ensure_correct_data_type(data_type)
             else:
                 raise RuntimeError("Should not reach this condition. ({} vs {})"
                                    .format(rest_level_1, rest_level_2))
