@@ -439,7 +439,7 @@ class Dependency:
 
 class GenerationInfoByTarget:
     def __init__(self):
-        self.name: str = None
+        self.name: str = None       # Module name
         self.data: List['Info'] = []
         self.child_modules: List[str] = []
         self.dependencies: List['Dependency'] = []
@@ -448,7 +448,7 @@ class GenerationInfoByTarget:
 
 class GenerationInfoByRule:
     def __init__(self):
-        self._info: Dict[str, 'GenerationInfoByTarget'] = {}
+        self._info: Dict[str, 'GenerationInfoByTarget'] = {}    # Key: Output file name
 
     def get_target(self, target: str) -> 'GenerationInfoByTarget':
         if target not in self._info.keys():
@@ -490,7 +490,7 @@ class PackageGeneratorConfig:
 class PackageGenerationRule:
     def __init__(self, name: str, target_files: List[str],
                  analyzer: 'BaseAnalyzer', generator: 'BaseGenerator'):
-        self._name: str = name
+        self._name: str = name      # Rule
         self._target_files: List[str] = target_files
         self._analyzer: 'BaseAnalyzer' = analyzer
         self._generator: 'BaseGenerator' = generator
@@ -702,12 +702,12 @@ class PackageAnalyzer:
             #       => mathutils
             elif rest_level_1 == 0 and rest_level_2 >= 1:
                 module_path = ".".join(mod_names_1)
-            # [Case 5] Match partially (Lower level) => Need to import same level
+            # [Case 5] Match partially (Lower level) => Need to import top level
             #   data_type_1: mathutils.noise.cell
             #   data_type_2: mathutils.Vector
-            #       => .noise
+            #       => mathutils.noise
             elif rest_level_1 >= 1 and rest_level_2 == 0:
-                module_path = "." + mod_names_1[match_level]
+                module_path = ".".join(mod_names_1)
             else:
                 raise RuntimeError("Should not reach this condition.")
 

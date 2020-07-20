@@ -196,16 +196,16 @@ class DataTypeRefinerTest(common.FakeBpyModuleTestBase):
 
         self.assertIsNone(refiner.get_generation_data_type(None, "module_2.ClassE"))
         self.assertEqual(refiner.get_generation_data_type("module_1.ClassC", None), "module_1.ClassC")
-        self.assertEqual(refiner.get_generation_data_type("module_1.submodule_1.ClassA", "module_2.ClassE"),
+        self.assertEqual(refiner.get_generation_data_type("module_1.submodule_1.ClassA", "module_2"),
                          "module_1.submodule_1.ClassA")
-        self.assertEqual(refiner.get_generation_data_type("module_1.ClassC", "module_1.ClassD"),
+        self.assertEqual(refiner.get_generation_data_type("module_1.ClassC", "module_1"),
                          "ClassC")
-        self.assertEqual(refiner.get_generation_data_type("module_1.submodule_1.ClassA", "module_1.submodule_2.ClassB"),
+        self.assertEqual(refiner.get_generation_data_type("module_1.submodule_1.ClassA", "module_1.submodule_2"),
                          "module_1.submodule_1.ClassA")
-        self.assertEqual(refiner.get_generation_data_type("module_1.ClassC", "module_1.submodule_1.ClassA"),
+        self.assertEqual(refiner.get_generation_data_type("module_1.ClassC", "module_1.submodule_1"),
                          "module_1.ClassC")
-        self.assertEqual(refiner.get_generation_data_type("module_1.submodule_1.ClassA", "module_1.ClassC"),
-                         "ClassA")
+        self.assertEqual(refiner.get_generation_data_type("module_1.submodule_1.ClassA", "module_1"),
+                         "module_1.submodule_1.ClassA")
 
     def test_get_refined_data_type(self):
         package = ModuleStructure()

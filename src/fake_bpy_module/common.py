@@ -1235,7 +1235,7 @@ class DataTypeRefiner:
         if data_type is None:
             return None
 
-        module_names = data_type.split(".")
+        module_names = data_type.split(".")[:-1]
 
         def search(mod_names, structure: 'ModuleStructure', dtype: str, is_first_level: bool=False):
             if len(mod_names) == 0:
@@ -1247,7 +1247,7 @@ class DataTypeRefiner:
                     return search(mod_names[1:], s, s.name)
                 else:
                     return search(mod_names[1:], s, dtype + "." + s.name)
-            return dtype
+            return ""
 
         relative_type = search(module_names, self._package_structure,
                                "", True)
@@ -1266,9 +1266,10 @@ class DataTypeRefiner:
         return ensured
 
     def get_generation_data_type(self, data_type_1: str,
-                                 data_type_2: str) -> str:
+                                 target_module: str) -> str:
         mod_names_full_1 = self.get_module_name(data_type_1)
-        mod_names_full_2 = self.get_module_name(data_type_2)
+        mod_names_full_2 = target_module
+
         if mod_names_full_1 is None or mod_names_full_2 is None:
             return data_type_1      # TODO: should return better data_type
 
@@ -1313,12 +1314,12 @@ class DataTypeRefiner:
             #       => mathutils.Vector
             elif rest_level_1 == 0 and rest_level_2 >= 1:
                 final_data_type = self._ensure_correct_data_type(data_type_1)
-            # [Case 5] Match partially (Lower level) => Use relative data_type_1
+            # [Case 5] Match partially (Lower level) => Use data_type_1
             #   data_type_1: mathutils.noise.cell
             #   data_type_2: mathutils.Vector
-            #       => noise.cell
+            #       => mathutils.noise.cell
             elif rest_level_1 >= 1 and rest_level_2 == 0:
-                final_data_type = self.get_base_name(data_type_1)
+                final_data_type = self._ensure_correct_data_type(data_type_1)
             else:
                 raise RuntimeError("Should not reach this condition. ({} vs {})"
                                    .format(rest_level_1, rest_level_2))

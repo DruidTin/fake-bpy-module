@@ -443,21 +443,21 @@ class GenerationInfoByRuleTest(common.FakeBpyModuleTestBase):
         info = GenerationInfoByRule()
 
         with self.assertRaises(RuntimeError):
-            info.get_target("target_1")
+            info.get_target("target_1.py")
 
-        target_1 = info.get_or_create_target("target_1")
-        self.assertEqual(info.get_target("target_1"), target_1)
-        self.assertEqual(info.get_or_create_target("target_1"), target_1)
+        target_1 = info.get_or_create_target("target_1.py")
+        self.assertEqual(info.get_target("target_1.py"), target_1)
+        self.assertEqual(info.get_or_create_target("target_1.py"), target_1)
 
-        target_2 = info.create_target("target_2")
-        self.assertEqual(info.get_target("target_2"), target_2)
-        self.assertEqual(info.get_or_create_target("target_2"), target_2)
+        target_2 = info.create_target("target_2/__init__.py")
+        self.assertEqual(info.get_target("target_2/__init__.py"), target_2)
+        self.assertEqual(info.get_or_create_target("target_2/__init__.py"), target_2)
 
-        target_3 = info.create_target("target_3")
-        info.update_target("target_3", target_2)
-        self.assertEqual(info.get_target("target_3"), target_2)
+        target_3 = info.create_target("target_2/sub.py")
+        info.update_target("target_2/sub.py", target_2)
+        self.assertEqual(info.get_target("target_2/sub.py"), target_2)
 
-        self.assertEquals(list(info.targets()), ["target_1", "target_2", "target_3"])
+        self.assertEquals(list(info.targets()), ["target_1.py", "target_2/__init__.py", "target_2/sub.py"])
 
 
 class PackageGeneratorConfigTest(common.FakeBpyModuleTestBase):
@@ -676,7 +676,9 @@ class PackageAnalyzerTest(common.FakeBpyModuleTestBase):
         self.assertEqual(target_module_1.data[0].type(), "class")
         self.assertEqual(target_module_1.data[0].name(), "ClassA")
         self.assertEquals(target_module_1.child_modules, ["submodule_1"])
-        self.assertEqual(len(target_module_1.dependencies), 0)
+        self.assertEqual(len(target_module_1.dependencies), 1)
+        self.assertEqual(target_module_1.dependencies[0].mod_name, "module_1.submodule_1")
+        self.assertEquals(target_module_1.dependencies[0].type_lists, ["BaseClass1"])
 
         target_module_1_submodule_1 = actual_gen_info_2.get_target("module_1/submodule_1.py")
         self.assertEqual(len(target_module_1_submodule_1.data), 3)
@@ -694,7 +696,11 @@ class PackageAnalyzerTest(common.FakeBpyModuleTestBase):
         self.assertEqual(target_module_2.data[0].type(), "function")
         self.assertEqual(target_module_2.data[0].name(), "function_1")
         self.assertEqual(len(target_module_2.child_modules), 0)
-        self.assertEqual(len(target_2.dependencies), 1)
+        self.assertEqual(len(target_module_2.dependencies), 2)
+        self.assertEqual(target_module_2.dependencies[0].mod_name, "module_1")
+        self.assertEquals(target_module_2.dependencies[0].type_lists, ["ClassA"])
+        self.assertEqual(target_module_2.dependencies[1].mod_name, "module_1.submodule_1")
+        self.assertEquals(target_module_2.dependencies[1].type_lists, ["BaseClass1"])
 
 
 class PackageGeneratorTest(common.FakeBpyModuleTestBase):
